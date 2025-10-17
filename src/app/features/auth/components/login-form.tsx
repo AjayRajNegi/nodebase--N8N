@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -21,6 +22,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address."),
@@ -41,7 +44,21 @@ export function LoginForm() {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    console.log(values);
+    await authClient.signIn.email(
+      {
+        email: values.email,
+        password: values.password,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+      }
+    );
   };
 
   const isPending = form.formState.isSubmitting;
