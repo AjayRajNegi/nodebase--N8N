@@ -12,7 +12,13 @@ export default function Page() {
 
   const { data } = useQuery(trpc.getWorkflows.queryOptions());
 
-  const testAi = useMutation(trpc.testAi.mutationOptions());
+  const testAi = useMutation(
+    trpc.testAi.mutationOptions({
+      onSuccess: () => {
+        toast.success("AI job queued.");
+      },
+    })
+  );
   const create = useMutation(
     trpc.createWorkflow.mutationOptions({
       onSuccess: () => {
