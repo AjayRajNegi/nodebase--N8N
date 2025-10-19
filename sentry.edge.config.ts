@@ -7,6 +7,14 @@ import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: "https://33dc384f8d162cbf06d6e4baf7024f74@o4510217068347392.ingest.de.sentry.io/4510217085321296",
+  integrations: [
+    // Add the Vercel AI SDK integration to sentry.server.config.ts
+    Sentry.vercelAIIntegration({
+      recordInputs: true,
+      recordOutputs: true,
+    }),
+    Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+  ],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
