@@ -4,12 +4,10 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useSuspenseWorkflows = () => {
   const trpc = useTRPC();
-
   return useSuspenseQuery(trpc.workflows.getMany.queryOptions());
 };
 
