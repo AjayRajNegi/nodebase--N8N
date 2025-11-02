@@ -3,10 +3,19 @@ import { Button } from "./ui/button";
 import {
   Loader2Icon,
   LucideAlertTriangle,
+  PackageOpenIcon,
   PlusIcon,
   SearchIcon,
 } from "lucide-react";
 import { Input } from "./ui/input";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "./ui/empty";
 
 type EntityHeaderProps = {
   title: string;
@@ -168,5 +177,28 @@ export const ErrorView = ({ message }: StateViewProps) => {
       <LucideAlertTriangle className="size-6  text-primary" />
       {!!message && <p className="text-sm text-muted-foreground">{message}</p>}
     </div>
+  );
+};
+
+interface EmptyViewProps extends StateViewProps {
+  onNew?: () => void;
+}
+
+export const EmptyView = ({ message, onNew }: EmptyViewProps) => {
+  return (
+    <Empty className="border border-dashed bg-white">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <PackageOpenIcon />
+        </EmptyMedia>
+      </EmptyHeader>
+      <EmptyTitle>No items</EmptyTitle>
+      {!!message && <EmptyDescription>{message}</EmptyDescription>}
+      {!!onNew && (
+        <EmptyContent>
+          <Button onClick={onNew}>Add item</Button>
+        </EmptyContent>
+      )}
+    </Empty>
   );
 };
