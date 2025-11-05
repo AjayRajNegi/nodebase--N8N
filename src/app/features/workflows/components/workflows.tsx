@@ -1,4 +1,5 @@
 "use client";
+import { formatDistanceToNow } from "date-fns";
 import {
   EmptyView,
   EntityContainer,
@@ -12,6 +13,7 @@ import {
 } from "@/components/entity-components";
 import {
   useCreateWorkflow,
+  useRemoveWorkflow,
   useSuspenseWorkflows,
 } from "../hooks/user-workflows";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
@@ -144,18 +146,28 @@ export const WorkflowsEmpty = () => {
 };
 
 export const WorkflowItem = ({ data }: { data: Workflow }) => {
+  const removeWorkflow = useRemoveWorkflow();
+  const handleRemove = () => {
+    removeWorkflow.mutate({ id: data.id });
+  };
   return (
     <EntityItem
       href={`/workflows/${data.id}`}
       title={data.name}
-      subTitle={<>Updated TODO &bull; Created TODO</>}
+      subTitle={
+        <>
+          Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
+          &bull; Created{" "}
+          {formatDistanceToNow(data.createdAt, { addSuffix: true })}
+        </>
+      }
       image={
         <div className="size-8 flex items-center justify-center">
           <WorkflowIcon className="size-5 text-muted-foreground" />
         </div>
       }
-      onRemove={() => {}}
-      isRemoving={false}
+      onRemove={handleRemove}
+      isRemoving={removeWorkflow.isPending}
     />
   );
 };
