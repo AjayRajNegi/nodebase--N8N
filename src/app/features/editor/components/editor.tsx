@@ -18,6 +18,7 @@ import { ErrorView, LoadingView } from "@/components/entity-components";
 import { useSuspenseWorkflow } from "../../workflows/hooks/user-workflows";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useState } from "react";
+import { nodeComponents } from "@/config/node-components";
 
 export const EditorLoading = () => {
   return <LoadingView message="Loading editor..." />;
@@ -37,8 +38,8 @@ const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
 export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
 
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
+  const [edges, setEdges] = useState<Edge[]>(workflow.edges);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
@@ -64,6 +65,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={nodeComponents}
         fitView
         // proOptions={{
         //   hideAttribution: true,
