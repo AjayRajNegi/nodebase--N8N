@@ -12,6 +12,9 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Separator } from "./ui/separator";
+import { useReactFlow } from "@xyflow/react";
+import { useCallback } from "react";
+import { toast } from "sonner";
 
 export type NodeTypeOption = {
   type: NodeType;
@@ -50,6 +53,52 @@ export function NodeSelector({
   onOpenChange,
   children,
 }: NodeSelectorProps) {
+  const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
+
+  const handleNodeSelect = useCallback(
+    (selection: NodeTypeOption) => {
+      if (selection.type === NodeType.MANUAL_TRIGGER) {
+        const nodes = getNodes();
+        const hasManualTrigger = nodes.some(
+          (node) => node.type === NodeType.MANUAL_TRIGGER
+        );
+
+        if (hasManualTrigger) {
+          toast.error("Only one manual trigger is allowed per workflow.");
+          return;
+        }
+      }
+      setNodes((nodes) => {
+        const hasInitialTrigger = nodes.some(
+          (node) => node.type === NodeType.INITIAL
+        );
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        const flowPosition = screenToFlowPosition({
+          x: centerX + (Math.random() - 0.5) * 200,
+          y: centerY + (Math.random() - 0.5) * 200,
+        });
+
+        const newNode = {
+          id: createId(),
+          data: {},
+          position: flowPosition,
+          type: selection.type,
+        };
+
+        if (hasInitialTrigger) {
+          return [newNode];
+        }
+
+        return [...nodes, newNode];
+      });
+      onOpenChange(false);
+    },
+    [setNodes, getNodes, onOpenChange, screenToFlowPosition]
+  );
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>{children}</SheetTrigger>
@@ -68,7 +117,9 @@ export function NodeSelector({
               <div
                 key={nodeType.type}
                 className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                onClick={() => {}}
+                onClick={() => {
+                  handleNodeSelect(nodeType);
+                }}
               >
                 <div className="flex items-cente gap-6 w-full overflow-hidden">
                   {typeof Icon === "string" ? (
@@ -102,7 +153,9 @@ export function NodeSelector({
               <div
                 key={nodeType.type}
                 className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                onClick={() => {}}
+                onClick={() => {
+                  handleNodeSelect(nodeType);
+                }}
               >
                 <div className="flex items-cente gap-6 w-full overflow-hidden">
                   {typeof Icon === "string" ? (
